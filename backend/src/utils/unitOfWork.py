@@ -1,0 +1,19 @@
+from sqlalchemy.orm import sessionmaker
+
+class UnitOfWork:
+    def __init__(self, session_factory: sessionmaker):
+        self._session_factory = session_factory
+        self.session = None
+
+    def __enter__(self):
+        self.session = self._session_factory()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        try:
+            if exc_type:
+                self.session.rollback()
+            else:
+                self.session.commit()
+        finally:
+            self.session.close()

@@ -1,0 +1,63 @@
+# ------------------------
+# Entorno virtual
+# ------------------------
+venv/
+backend/venv/
+.env
+
+# ------------------------
+# Archivos de Python compilados
+# ------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# ------------------------
+# Bases de datos locales
+# ------------------------
+*.sqlite3
+*.db
+
+# ------------------------
+# Migraciones Alembic que no quieres versionar
+# (opcional, si no querés subir migraciones antiguas)
+# ------------------------
+# backend/alembic/versions/*.py
+
+# ------------------------
+# Archivos de configuración local / secretos
+# ------------------------
+config.py
+*.local.py
+instance/
+secrets/
+
+# ------------------------
+# Logs
+# ------------------------
+*.log
+
+# ------------------------
+# IDEs y editores
+# ------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ------------------------
+# Sistema / temporales
+# ------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# ------------------------
+# Otros paquetes
+# ------------------------
+node_modules/
+*.egg-info/
+dist/
+build/
