@@ -33,6 +33,15 @@ def get_client_prices(id):
     with uow as u:
         items = clientService.get_client_prices(u.session, id)
         return jsonify([i.to_dict() for i in items])
+    
+@client_bp.route('/clients/<int:id>', methods=['PATCH'])
+def edit_client_info(id):
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        data = request.get_json()
+        print(data)
+        client = clientService.update_client(u.session, client_id= id, name=data.get('name'), phone=data.get('phone'), address=data.get('adress'))
+        return jsonify({"id": client.id, "name": client.name}), 201
 
 
     

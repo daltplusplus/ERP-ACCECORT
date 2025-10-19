@@ -1,4 +1,5 @@
 import axios from 'axios'
+import api from './axios';
 
 export async function updateItemPrice(itemId, newPrice) {
   const price = {
@@ -6,7 +7,7 @@ export async function updateItemPrice(itemId, newPrice) {
   }
 
   try {
-    const response = await axios.patch(`http://localhost:5000/items/${itemId}`,price)
+    const response = await api.patch(`/items/${itemId}`,price)
     return response.data
   } catch (error) {
     console.error('Error al obtener clientes:', error)
@@ -20,7 +21,7 @@ export async function itemGlobalIncrease(increase) {
   }
 
   try {
-    const response = await axios.patch(`http://localhost:5000/items`,data)
+    const response = await api.patch(`/items`,data)
     return response.data
   } catch (error) {
     console.error('Error al obtener clientes:', error)

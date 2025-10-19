@@ -3,6 +3,8 @@
     <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-5xl space-y-8 border border-gray-200">
       <h1 class="text-3xl font-bold text-center text-gray-800">Editar Boleta</h1>
 
+      
+
       <!-- Información general -->
       <div class="grid grid-cols-2 gap-4 border rounded-lg p-4 bg-gray-50">
         <div>
@@ -38,6 +40,7 @@
           <div>
             <select
               v-model="item.producto"
+              :disabled="!editable"
               class="w-full rounded-lg border p-2"
               @change="actualizarPrecioUnitario(index)"
             >
@@ -57,6 +60,7 @@
             <input
               type="number"
               min="1"
+              :disabled="!editable"
               class="w-20 rounded-lg border p-2 text-center"
               v-model.number="item.cantidad"
               @input="actualizarSubtotal(index)"
@@ -76,8 +80,10 @@
           <!-- Botón quitar -->
           <div class="text-center">
             <button
+              v-if="editable"
               @click="eliminarProducto(index)"
-              class="text-red-500 hover:text-red-700 text-sm"
+              :disabled="!editable"
+              class="bg-red-300 text-white px-2 py-1 rounded-lg hover:bg-red-500 disabled:opacity-50"
             >
               Quitar
             </button>
@@ -85,8 +91,10 @@
         </div>
 
         <button
+          v-if="editable"
           @click="agregarProducto"
-          class="text-blue-600 hover:underline text-sm mt-3 block"
+          :disabled="!editable"
+          class="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 disabled:opacity-50 mt-2"
         >
           + Agregar producto
         </button>
@@ -100,6 +108,7 @@
           min="0"
           max="100"
           v-model.number="descuento"
+          :disabled="!editable"
           class="w-full rounded-lg border p-2"
         />
       </div>
@@ -120,9 +129,20 @@
 
       <!-- Botones -->
       <div class="flex justify-end gap-3">
+        <!-- Botón Editar -->
+      
         <button
-          class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          v-if="!editable"
+          @click="editable = true"
+          class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+        >
+          Editar
+        </button>
+        <button
+          v-if="editable"
+          class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50"
           @click="guardarBoleta"
+          :disabled="!editable"
         >
           Guardar Boleta
         </button>
@@ -136,7 +156,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
@@ -154,8 +173,10 @@ const productos = ref([])
 const productosSeleccionados = ref([])
 const descuento = ref(0)
 
+// Nuevo ref para controlar edición
+const editable = ref(false)
+
 function mapItem(item) {
-  // Busca el producto en la lista por nombre o ID
   const productoEncontrado =
     productos.value.find(p => p.product === item.name) || null
 
@@ -179,7 +200,7 @@ onMounted(async () => {
     } else {
       productosSeleccionados.value = []
     }
-    descuento.value= Number(ticket.value.discount) || 0
+    descuento.value = Number(ticket.value.discount) || 0
   } catch (error) {
     console.error('Error al cargar precios del cliente:', error)
   }
@@ -237,9 +258,10 @@ function guardarBoleta() {
   }
 
   console.log('Boleta generada:', boleta)
-  
   changeTicket(ticketId, boleta)
-
+  
+  // Después de guardar, bloquea de nuevo
+  editable.value = false
 }
 
 async function exportarPDF() {
@@ -252,5 +274,4 @@ async function exportarPDF() {
   link.click()
   window.URL.revokeObjectURL(url)
 }
-
 </script>

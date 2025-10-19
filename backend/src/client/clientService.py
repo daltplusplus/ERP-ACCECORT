@@ -26,20 +26,19 @@ class ClientService:
         self.repository.save(client)
         return client
 
-    def update_client(self, client_id: int, name: str = None, address: str = None, phone: str = None):
-        with self.uow_factory() as uow:
-            self.repository.set_session(uow.session)
-            client = self.repository.get_by_id(client_id)
-            if not client:
-                return None
-            if name:
-                client.name = name
-            if address:
-                client.adress = address
-            if phone:
-                client.phone = phone
-            self.repository.update(client)
-            return client
+    def update_client(self, session, client_id: int, name: str = None, address: str = None, phone: str = None):
+        self.repository.set_session(session)
+        client = self.repository.get_by_id(client_id)
+        if not client:
+            return None
+        if name:
+            client.name = name
+        if address:
+            client.adress = address
+        if phone:
+            client.phone = phone
+        self.repository.update(client)
+        return client
 
     def delete_client(self, client_id: int):
         with self.uow_factory() as uow:

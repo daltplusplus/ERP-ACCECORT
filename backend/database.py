@@ -9,7 +9,7 @@ from src.product import product
 from src.priceList import priceList
 from src.ticket import ticket
 
-engine = create_engine('sqlite:///mi_base.db', echo=True)
+engine = create_engine('sqlite:///../data/mi_base.db', echo=True)
 SessionLocal = sessionmaker(bind=engine)
 
 @event.listens_for(Engine, "connect")

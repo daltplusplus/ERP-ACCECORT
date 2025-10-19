@@ -4,8 +4,6 @@ from src.client.clientController import client_bp
 from src.priceList.priceListController import price_list_bp, item_price_list_bp
 from src.product.productController import product_bp
 from src.ticket.ticketController import ticket_bp
-
-app = Flask(__name__)
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -21,4 +19,4 @@ def main():
     
 if __name__ == "__main__":
     main()
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

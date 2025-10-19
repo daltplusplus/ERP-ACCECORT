@@ -26,3 +26,7 @@ class ClientRepository:
         self.session.flush()
         self.session.refresh(client)
         return client
+    
+    def update(self, client):
+        self.session.merge(client)
+        return client

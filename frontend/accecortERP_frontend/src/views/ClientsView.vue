@@ -1,19 +1,18 @@
-<!-- src/views/ClientesView.vue -->
 <template>
   <div class="p-6 max-w-4xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">Clientes</h1>
 
-    <!-- Botón para abrir el modal -->
+    <!-- Botón para abrir el modal de nuevo cliente -->
     <button
-      @click="modalOpen = true"
+      @click="modalNuevoOpen = true"
       class="mb-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
     >
       Nuevo Cliente
     </button>
 
-    <!-- Modal popup -->
+    <!-- Modal para agregar nuevo cliente -->
     <div
-      v-if="modalOpen"
+      v-if="modalNuevoOpen"
       class="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
     >
       <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
@@ -32,7 +31,7 @@
           <div class="flex justify-end gap-3">
             <button
               type="button"
-              @click="modalOpen = false; nuevoClienteNombre = ''"
+              @click="modalNuevoOpen = false; nuevoClienteNombre = ''"
               class="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
             >
               Cancelar
@@ -42,6 +41,55 @@
               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
             >
               Agregar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para editar cliente -->
+    <div
+      v-if="modalEditarOpen"
+      class="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+        <h2 class="text-xl font-semibold mb-4">Editar Cliente</h2>
+
+        <form @submit.prevent="guardarEdicionCliente">
+          <input
+            v-model="clienteEditado.name"
+            type="text"
+            placeholder="Nombre"
+            class="border rounded px-3 py-2 w-full mb-3"
+            required
+            autofocus
+          />
+          <input
+            v-model="clienteEditado.phone"
+            type="text"
+            placeholder="Número"
+            class="border rounded px-3 py-2 w-full mb-3"
+          />
+          <input
+            v-model="clienteEditado.adress"
+            type="text"
+            placeholder="Dirección"
+            class="border rounded px-3 py-2 w-full mb-3"
+          />
+
+          <div class="flex justify-end gap-3">
+            <button
+              type="button"
+              @click="modalEditarOpen = false; clienteEditado = {}"
+              class="px-4 py-2 rounded border border-gray-300 hover:bg-gray-100"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="bg-green-800 text-white px-4 py-2 rounded hover:bg-green-900 transition"
+            >
+              Guardar
             </button>
           </div>
         </form>
@@ -58,6 +106,8 @@
         <div>
           <h2 class="text-xl font-semibold">{{ cliente.name }}</h2>
           <p class="text-sm text-gray-500">ID: {{ cliente.id }}</p>
+          <p class="text-sm text-gray-500">Número: {{ cliente.phone || '---' }}</p>
+          <p class="text-sm text-gray-500">Dirección: {{ cliente.adress || '---' }}</p>
         </div>
 
         <div class="flex gap-2">
@@ -69,10 +119,17 @@
           </RouterLink>
           <RouterLink
             :to="`/clientes/${cliente.id}/ticket`"
-            class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+            class="bg-green-800 text-white px-4 py-2 rounded-lg hover:bg-green-900"
           >
             Boletas
           </RouterLink>
+          <!-- Botón editar -->
+          <button
+            @click="abrirEditarCliente(cliente)"
+            class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-700"
+          >
+            Editar
+          </button>
         </div>
       </div>
     </div>
@@ -82,11 +139,13 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import { getClients, createClient } from '../api/Clientes'
+import { getClients, createClient, updateClient } from '../api/Clientes'
 
 const clientes = ref([])
-const modalOpen = ref(false)
+const modalNuevoOpen = ref(false)
+const modalEditarOpen = ref(false)
 const nuevoClienteNombre = ref('')
+const clienteEditado = ref({})
 
 onMounted(async () => {
   try {
@@ -103,9 +162,30 @@ async function addCliente() {
     const clienteCreado = await createClient({ name: nuevoClienteNombre.value.trim() })
     clientes.value.push(clienteCreado)
     nuevoClienteNombre.value = ''
-    modalOpen.value = false
+    modalNuevoOpen.value = false
   } catch (err) {
     console.error('Error creando cliente:', err)
+  }
+}
+
+// Abrir modal de edición
+function abrirEditarCliente(cliente) {
+  clienteEditado.value = { ...cliente } // copia para editar
+  modalEditarOpen.value = true
+}
+
+// Guardar cambios de edición
+async function guardarEdicionCliente() {
+  try {
+    console.log(clienteEditado.value)
+    const actualizado = await updateClient(clienteEditado.value.id, clienteEditado.value)
+    // Actualiza la lista local
+    const index = clientes.value.findIndex(c => c.id === actualizado.id)
+    if (index !== -1) clientes.value[index] = actualizado
+    modalEditarOpen.value = false
+    clienteEditado.value = {}
+  } catch (err) {
+    console.error('Error actualizando cliente:', err)
   }
 }
 </script>

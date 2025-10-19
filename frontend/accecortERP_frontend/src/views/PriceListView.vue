@@ -31,7 +31,7 @@
                 @click="startEditing(index, item.price)"
                 class="text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition"
               >
-                ✏️ Editar
+                Editar
               </button>
 
               <!-- Botones GUARDAR y CANCELAR -->
@@ -40,13 +40,13 @@
                   @click="savePrice(index)"
                   class="text-sm px-3 py-1 rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition"
                 >
-                  💾 Guardar
+                  Guardar
                 </button>
                 <button
                   @click="cancelEdit"
                   class="text-sm px-3 py-1 rounded-full bg-red-100 text-red-700 hover:bg-red-200 transition ml-2"
                 >
-                  ✖ Cancelar
+                  Cancelar
                 </button>
               </template>
             </div>

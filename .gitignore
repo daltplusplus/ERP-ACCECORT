@@ -12,6 +12,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.pyc
+*.pyo
+*.pyd
 
 # ------------------------
 # Bases de datos locales
