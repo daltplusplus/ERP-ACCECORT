@@ -1,4 +1,4 @@
-from src.client.client import Client
+from src.client.client import Client, ClientDTO
 from src.client.clientRepository import ClientRepository
 from src.priceList.priceListService import PriceListService
 from src.priceList.priceList import PriceList
@@ -16,27 +16,29 @@ class ClientService:
         self.repository.set_session(session)
         return self.repository.get_by_id(client_id)
 
-    def create_client(self, name: str, address: str, phone: str, session):
+    def create_client(self, name: str, address: str, phone: str, pricelist_id, session):
         self.repository.set_session(session)
         client = Client(name=name)
         client.adress = address
         client.phone = phone
-        
-        self.priceListService.create_price_list(session,client=client)
+        client.pricelist_id = pricelist_id
+        #self.priceListService.create_price_list(session,client=client)
         self.repository.save(client)
         return client
 
-    def update_client(self, session, client_id: int, name: str = None, address: str = None, phone: str = None):
+    def update_client(self, session, client_id, dto: ClientDTO):
         self.repository.set_session(session)
-        client = self.repository.get_by_id(client_id)
+        client :Client= self.repository.get_by_id(client_id)
         if not client:
             return None
-        if name:
-            client.name = name
-        if address:
-            client.adress = address
-        if phone:
-            client.phone = phone
+        if dto.name:
+            client.name = dto.name
+        if dto.adress:
+            client.adress = dto.adress
+        if dto.phone:
+            client.phone = dto.phone
+        if dto.pricelist_id:
+            client.pricelist_id = dto.pricelist_id
         self.repository.update(client)
         return client
 

@@ -10,6 +10,10 @@ class ItemPriceListService:
     def list_items(self, session):
         self.repository.set_session(session)
         return self.repository.get_all()
+    
+    def list_items_by_list(self, session, list_id):
+        self.repository.set_session(session)
+        return self.repository.get_all_by_list_id(list_id)
 
     def get_item(self, item_id: int, session):
         self.repository.set_session(session)
@@ -59,17 +63,16 @@ class PriceListService:
 
     def list_price_lists(self, session):
         self.priceListRepository.set_session(session)
-        return self.priceListRepository.get_all(session)
+        return self.priceListRepository.get_all()
 
-    def get_price_list(self, list_id: int):
-        with self.uow_factory() as uow:
-            self.priceListRepository.set_session(uow.session)
-            return self.priceListRepository.get_by_id(list_id)
+    def get_price_list(self,session, list_id: int):
+        self.priceListRepository.set_session(session)
+        return self.priceListRepository.get_by_id(list_id)
 
-    def create_price_list(self,session, client: Client):
+    def create_price_list(self,session, name):
         self.priceListRepository.set_session(session)
 
-        price_list = PriceList(client=client)
+        price_list = PriceList(name=name)
         self.priceListRepository.save(price_list)
 
         # Crear items con la misma sesión

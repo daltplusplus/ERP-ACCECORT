@@ -11,23 +11,24 @@ class PriceList(Base):
     __tablename__ = 'price_lists'
 
     id = Column(Integer,primary_key=True)
-    client_id = Column(Integer, ForeignKey('clients.id'))
-    client = relationship('Client')
-    items = relationship('ItemPriceList', back_populates='list' )
+    #client_id = Column(Integer, ForeignKey('clients.id'))
+    #client = relationship('Client')
+    items = relationship('ItemPriceList', back_populates='list')
+    name = Column(String)
 
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, name):
+        self.name = name
 
     def to_dict(self):
         return {
             'id': self.id,
-            'client': self.client_id
+            'name': self.name
         }
 
 @dataclass
 class PriceListDTO:
-    client_id: str
+    name : String
 
 
 class ItemPriceList(Base):

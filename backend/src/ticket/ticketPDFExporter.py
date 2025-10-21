@@ -17,10 +17,13 @@ class TicketPDFExporter:
         story = []
 
         # Encabezado
-        story.append(Paragraph("<b>ACCECORT</b>", styles["Title"]))
+        #story.append(Paragraph("<b>ACCECORT</b>", styles["Title"]))
         story.append(Spacer(1, 10))
         story.append(Paragraph(f"<b>Cliente:</b> {self.client['name']}", styles["Normal"]))
-        story.append(Paragraph(f"<b>direccion:</b> {self.client['adress']}", styles["Normal"]))
+        if self.client['adress']:
+            story.append(Paragraph(f"<b>Direccion:</b> {self.client['adress']}", styles["Normal"]))
+        if self.client['phone']:
+            story.append(Paragraph(f"<b>Telefono:</b> {self.client['phone']}", styles["Normal"]))
         story.append(Paragraph(f"<b>Fecha:</b> {self.ticket['date']}", styles["Normal"]))
         story.append(Spacer(1, 12))
 

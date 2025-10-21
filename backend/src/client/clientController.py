@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from src.utils.container import clientService
 from src.utils.unitOfWork import UnitOfWork
-from src.client.client import Client
+from src.client.client import Client, ClientDTO
 from database import SessionLocal
 client_bp = Blueprint('client_bp', __name__)
 
@@ -24,7 +24,9 @@ def create_client():
     uow = UnitOfWork(SessionLocal)
     with uow as u:
         data = request.json
-        client = clientService.create_client(data['name'], data.get('address', ''), data.get('phone', ''), u.session)
+        if not data.get('pricelist_id'):
+            return jsonify({'error': 'no Pricelist selected'}), 404
+        client = clientService.create_client(data['name'], data.get('address', ''), data.get('phone', ''), data.get('pricelist_id'), u.session)
         return jsonify({"id": client.id, "name": client.name}), 201
 
 @client_bp.route('/clients/<int:id>/prices', methods=['GET'])
@@ -39,9 +41,13 @@ def edit_client_info(id):
     uow = UnitOfWork(SessionLocal)
     with uow as u:
         data = request.get_json()
-        print(data)
-        client = clientService.update_client(u.session, client_id= id, name=data.get('name'), phone=data.get('phone'), address=data.get('adress'))
-        return jsonify({"id": client.id, "name": client.name}), 201
+        dto = ClientDTO(
+            adress=data.get('adress'),
+            phone=data.get('phone'),
+            name= data.get('name'),
+            pricelist_id=data.get('pricelist_id'))
+        client = clientService.update_client(u.session, client_id= id, dto=dto)
+        return client.to_dict()
 
 
     

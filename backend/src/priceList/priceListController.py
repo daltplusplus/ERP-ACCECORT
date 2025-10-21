@@ -12,26 +12,41 @@ item_price_list_bp = Blueprint('item_price_list', __name__)
 
 @price_list_bp.route('/price-lists', methods=['GET'])
 def get_price_lists():
-    lists = priceListService.list_price_lists()
-    return jsonify([l.to_dict() for l in lists])
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        lists = priceListService.list_price_lists(u.session)
+        return jsonify([l.to_dict() for l in lists])
+    
+
 
 
 @price_list_bp.route('/price-lists/<int:list_id>', methods=['GET'])
 def get_price_list(list_id):
-    price_list = priceListService.get_price_list(list_id)
-    if not price_list:
-        return jsonify({'error': 'Price list not found'}), 404
-    return jsonify(price_list.to_dict())
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        price_list = priceListService.get_price_list(u.session, list_id)
+        if not price_list:
+            return jsonify({'error': 'Price list not found'}), 404
+        return jsonify(price_list.to_dict())
+    
+@price_list_bp.route('/price-lists/<int:list_id>/items', methods=['GET'])
+def get_price_list_items(list_id):
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        items = itemPriceListService.list_items_by_list(u.session, list_id)
+        if not items:
+            return jsonify({'error': 'Price list not found'}), 404
+        return jsonify([i.to_dict() for i in items])
 
 
 @price_list_bp.route('/price-lists', methods=['POST'])
 def create_price_list():
-    data = request.get_json()
-    
-    priceListDTO = PriceListDTO(**data)
-    
-    price_list = priceListService.create_price_list(priceListDTO)
-    return jsonify(price_list.to_dict()), 201
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        data = request.get_json()
+                
+        price_list = priceListService.create_price_list(u.session, data.get('name'))
+        return jsonify(price_list.to_dict()), 201
 
 
 @price_list_bp.route('/price-lists/<int:list_id>', methods=['DELETE'])

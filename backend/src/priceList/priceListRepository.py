@@ -5,11 +5,11 @@ class PriceListRepository:
     def set_session(self, session):
         self.session = session
 
-    def get_all(self, session):
-        return session.query(PriceList).all()
+    def get_all(self):
+        return self.session.query(PriceList).all()
 
-    def get_by_id(self, session, list_id: int):
-        return session.query(PriceList).filter(PriceList.id == list_id).first()
+    def get_by_id(self, list_id: int):
+        return self.session.query(PriceList).filter(PriceList.id == list_id).first()
 
     def create(self, session, price_list: PriceList):
         session.add(price_list)
@@ -44,6 +44,9 @@ class ItemPriceListRepository:
     
     def get_by_product(self, product_id):
         return self.session.query(ItemPriceList).filter(ItemPriceList.product_id ==product_id ).all()
+    
+    def get_all_by_list_id(self, list_id):
+        return self.session.query(ItemPriceList).filter(ItemPriceList.list_id ==list_id ).all()
 
     def create(self, item: ItemPriceList):
         self.session.add(item)
