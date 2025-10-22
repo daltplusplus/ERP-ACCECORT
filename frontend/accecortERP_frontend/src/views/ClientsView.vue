@@ -27,6 +27,23 @@
             required
             autofocus
           />
+          
+          <select
+            v-model="nuevoClienteLista"
+            
+            class="w-full rounded-lg border p-2"
+            
+          >
+            <option disabled value="">Seleccionar lista de precios</option>
+            <option
+              v-for="lista in listasPrecio"
+              :key="lista.id"
+              :value="lista.id"
+            >
+              {{ lista.name }}
+            </option>
+          </select>
+          
 
           <div class="flex justify-end gap-3">
             <button
@@ -76,7 +93,21 @@
             placeholder="Dirección"
             class="border rounded px-3 py-2 w-full mb-3"
           />
-
+          <select
+            v-model="clienteEditado.pricelist_id"
+            
+            class="w-full rounded-lg border p-2"
+            
+          >
+            <option disabled value="">Seleccionar lista de precios</option>
+            <option
+              v-for="lista in listasPrecio"
+              :key="lista.id"
+              :value="lista.id"
+            >
+              {{ lista.name }}
+            </option>
+          </select>
           <div class="flex justify-end gap-3">
             <button
               type="button"
@@ -105,18 +136,13 @@
       >
         <div>
           <h2 class="text-xl font-semibold">{{ cliente.name }}</h2>
-          <p class="text-sm text-gray-500">ID: {{ cliente.id }}</p>
+          <!--p class="text-sm text-gray-500">ID: {{ cliente.id }}</p-->
           <p class="text-sm text-gray-500">Número: {{ cliente.phone || '---' }}</p>
           <p class="text-sm text-gray-500">Dirección: {{ cliente.adress || '---' }}</p>
+          <p class="text-sm text-gray-500">Lista: {{ listasPrecio.filter(function(list){ return list.id == cliente.pricelist_id}).map(function(list){return list.name}).at(0) || '---' }}</p>
         </div>
 
         <div class="flex gap-2">
-          <RouterLink
-            :to="`/clientes/${cliente.id}/lista`"
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Lista de Precios
-          </RouterLink>
           <RouterLink
             :to="`/clientes/${cliente.id}/ticket`"
             class="bg-green-800 text-white px-4 py-2 rounded-lg hover:bg-green-900"
@@ -140,12 +166,15 @@
 import { RouterLink } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { getClients, createClient, updateClient } from '../api/Clientes'
+import {getPriceLists} from '../api/PriceList'
 
 const clientes = ref([])
+const listasPrecio = ref([])
 const modalNuevoOpen = ref(false)
 const modalEditarOpen = ref(false)
 const nuevoClienteNombre = ref('')
 const clienteEditado = ref({})
+const nuevoClienteLista = ref('')
 
 onMounted(async () => {
   try {
@@ -153,15 +182,23 @@ onMounted(async () => {
   } catch (err) {
     console.error('Error cargando clientes:', err)
   }
+
+  try {
+    listasPrecio.value = await getPriceLists()
+  } catch (err) {
+    console.error('Error cargando listas de precios:', err)
+  }
 })
 
 async function addCliente() {
   if (!nuevoClienteNombre.value.trim()) return
 
+
   try {
-    const clienteCreado = await createClient({ name: nuevoClienteNombre.value.trim() })
+    const clienteCreado = await createClient({ name: nuevoClienteNombre.value.trim(), pricelist_id: nuevoClienteLista.value })
     clientes.value.push(clienteCreado)
     nuevoClienteNombre.value = ''
+    nuevoClienteLista.value = ''
     modalNuevoOpen.value = false
   } catch (err) {
     console.error('Error creando cliente:', err)
@@ -182,6 +219,7 @@ async function guardarEdicionCliente() {
     // Actualiza la lista local
     const index = clientes.value.findIndex(c => c.id === actualizado.id)
     if (index !== -1) clientes.value[index] = actualizado
+    console.log(actualizado)
     modalEditarOpen.value = false
     clienteEditado.value = {}
   } catch (err) {

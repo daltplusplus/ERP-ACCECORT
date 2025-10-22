@@ -16,6 +16,12 @@
           👥 Clientes
         </RouterLink>
         <RouterLink
+          to="/listas"
+          class="rounded px-3 py-2 font-medium transition-colors duration-200 hover:bg-blue-800"
+        >
+          👥 Listas de precios
+        </RouterLink>
+        <RouterLink
           to="/productos"
           class="rounded px-3 py-2 font-medium transition-colors duration-200 hover:bg-blue-800"
         >

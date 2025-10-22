@@ -1,10 +1,10 @@
 <template>
   <div class="p-6 max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Precios para {{client.name}} </h1>
+    <h1 class="text-3xl font-bold mb-6">Precios </h1>
 
     <div v-if="loading" class="text-gray-500">Cargando precios...</div>
 
-    <div v-else-if="precios.length === 0" class="text-gray-500">Este cliente no tiene precios asignados.</div>
+    <div v-else-if="precios.length === 0" class="text-gray-500">no hay productos.</div>
 
     <div v-else class="grid gap-4">
       <div
@@ -60,13 +60,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getClientPrices, getClient} from '../api/Clientes'
-import { updateItemPrice } from '../api/PriceList' 
+import { updateItemPrice, getPriceListItems } from '../api/PriceList' 
 
 const route = useRoute()
-const clientId = route.params.id
-const client = ref('')
-
+const pricelistId = route.params.id
 const precios = ref([])
 const loading = ref(true)
 
@@ -99,7 +96,7 @@ async function savePrice(index) {
 
 onMounted(async () => {
   try {
-    const data = await getClientPrices(clientId)
+    const data = await getPriceListItems(pricelistId)
     precios.value = data
   } catch (error) {
     console.error('Error al cargar precios:', error)
@@ -107,13 +104,5 @@ onMounted(async () => {
     loading.value = false
   }
 
-  try {
-    const data = await getClient(clientId)
-    client.value = data
-  } catch (error) {
-    console.error('Error al cargar cliente:', error)
-  } finally {
-    loading.value = false
-  }
 })
 </script>

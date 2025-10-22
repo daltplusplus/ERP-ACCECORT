@@ -160,8 +160,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getClientPrices, getClient } from '../api/Clientes'
+import { getClient } from '../api/Clientes'
 import { getTicket, changeTicket } from '../api/Tickets'
+import {getPriceListItems} from '../api/PriceList'
 
 const route = useRoute()
 const router = useRouter()
@@ -194,7 +195,7 @@ onMounted(async () => {
     const clienteId = ticket.value.client_id
     cliente.value = await getClient(clienteId)
 
-    productos.value = await getClientPrices(clienteId)
+    productos.value = await getPriceListItems(cliente.value.pricelist_id)
     if (Array.isArray(ticket.value.items)) {
       productosSeleccionados.value = ticket.value.items.map(mapItem)
     } else {
