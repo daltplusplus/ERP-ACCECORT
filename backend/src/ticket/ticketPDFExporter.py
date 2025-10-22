@@ -47,13 +47,20 @@ class TicketPDFExporter:
         story.append(table)
         story.append(Spacer(1, 15))
 
-        # Totales
-        story.append(Paragraph(f"<b>Subtotal:</b> ${self.ticket['subtotal']:.2f}", styles["Normal"]))
-        story.append(Paragraph(f"<b>Descuento:</b> {self.ticket['discount']}%", styles["Normal"]))
-        story.append(Paragraph(f"<b>Total:</b> ${self.ticket['total']:.2f}", styles["Normal"]))
+        # --- Totales en tabla alineada a la derecha ---
+        totals_data = [
+            ["Subtotal", f"${self.ticket.get('subtotal', 0):.2f}"],
+            ["Descuento", f"{self.ticket.get('discount', 0)}%"],
+            ["Total", f"${self.ticket.get('total', 0):.2f}"]
+        ]
+        totals_table = Table(totals_data, colWidths=[30*mm, 30*mm], hAlign='RIGHT')
+        totals_table.setStyle(TableStyle([
+            ("ALIGN", (1,0), (-1,-1), "RIGHT"),
+            ("FONTNAME", (0,0), (-1,-1), "Helvetica-Bold"),
+            ("LINEABOVE", (0,2), (-1,2), 1, colors.black)  # Línea sobre el total
+        ]))
+        story.append(totals_table)
         story.append(Spacer(1, 20))
-
-        story.append(Paragraph("<i>Emitido por accecort</i>", styles["Normal"]))
 
         # Construir PDF
         doc.build(story)
