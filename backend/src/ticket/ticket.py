@@ -9,8 +9,9 @@ from enum import Enum
 from dataclasses import dataclass
 
 class TicketState(Enum):
-    ISSUED = 1
-    PAID = 2
+    ISSUED = "ISSUED"
+    PAID = "PAID"
+    CANCELED = "CANCELED"
 
 class Ticket(Base):
     __tablename__ = 'tickets'
@@ -36,7 +37,7 @@ class Ticket(Base):
             "discount": self.discount,
             "subtotal": self.subtotal,
             "date": self.date.strftime("%d/%m/%Y") if self.date else None,
-            "state": str(self.state)
+            "state": str(self.state.name)
         }
 
         if include_items:
@@ -50,6 +51,7 @@ class TicketDTO:
     discount: float
     total: float
     subtotal: float
+    state: String
 
 class ItemTicket(Base):
     __tablename__ = 'items_ticket'

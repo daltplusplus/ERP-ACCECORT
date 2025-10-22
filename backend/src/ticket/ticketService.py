@@ -44,17 +44,18 @@ class TicketService:
         self.ticket_repo.set_session(session)
         ticket :Ticket = self.ticket_repo.get_by_id(ticket_id)
 
-        for item in ticket.items:
-            self.item_service.delete_item(session, item)
+        for field, value in ticketdto.__dict__.items():
+            if value is not None:
+                setattr(ticket, field, value)
+        
+        if itemsTicket:
+            for item in ticket.items:
+                self.item_service.delete_item(session, item)
 
-        ticket.discount = ticketdto.discount
-        ticket.total = ticketdto.total
-        ticket.subtotal = ticketdto.subtotal
-        ticket.items = []
-
-        for item in itemsTicket:
-            newItem = self.item_service.create_item(session, item, ticket)
-            ticket.items.append(newItem)
+                ticket.items = []
+            for item in itemsTicket:
+                newItem = self.item_service.create_item(session, item, ticket)
+                ticket.items.append(newItem)
 
         return self.ticket_repo.update(ticket)
         

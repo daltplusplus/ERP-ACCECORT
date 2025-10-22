@@ -54,13 +54,14 @@ def update_ticket(ticket_id):
     uow = UnitOfWork(SessionLocal)
     with uow as u:
         data = request.get_json()
-        ticketdto = TicketDTO(discount=data.get("discount"), total=data.get("total"), subtotal=data.get("subtotal"))
+        ticketdto = TicketDTO(discount=data.get("discount"), total=data.get("total"), subtotal=data.get("subtotal"), state=data.get("state"))
         itemsTicket = []
 
         items = data.get("items")
-        for item in items:
-            newItem = ItemTicketDTO(unitPrice=item.get("unitPrice"), amount=item.get("amount"), itemPriceListId=item.get("itemPriceListId", 0), subtotal=item.get("subtotal"), name=item.get("name"))
-            itemsTicket.append(newItem)
+        if items:
+            for item in items:
+                newItem = ItemTicketDTO(unitPrice=item.get("unitPrice"), amount=item.get("amount"), itemPriceListId=item.get("itemPriceListId", 0), subtotal=item.get("subtotal"), name=item.get("name"))
+                itemsTicket.append(newItem)
 
         updated_ticket = ticketService.update_ticket(u.session, ticket_id, ticketdto, itemsTicket)
 

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen flex justify-center items-start bg-gray-100 py-10">
     <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-5xl space-y-8 border border-gray-200">
-      <h1 class="text-3xl font-bold text-center text-gray-800">Editar Boleta</h1>
+      
 
       
 
