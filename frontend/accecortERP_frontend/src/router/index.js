@@ -7,6 +7,7 @@ import CreateTicketView from '../views/CreateTicketView.vue'
 import EditTicketView from '../views/EditTicketView.vue'
 import TicketsView from '../views/TicketsView.vue'
 import PriceListsView from '../views/PriceListsView.vue'
+import StatsView from '../views/StatsView.vue'
 
 const routes = [
   { path: '/clientes', component: ClientsView },
@@ -15,6 +16,7 @@ const routes = [
   { path: '/crear-ticket', component: CreateTicketView},
   { path: '/editar-ticket/:id', component: EditTicketView},
   { path: '/clientes/:id/ticket', component: TicketsView},
+  { path: '/estadisticas', component: StatsView},
   { path: '/listas', component: PriceListsView}
 ]
 

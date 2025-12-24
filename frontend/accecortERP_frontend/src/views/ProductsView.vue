@@ -184,7 +184,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { createProduct, getProducts, deleteProduct, updateProduct } from '../api/products'
+import { createProduct, getProducts, deleteProduct, updateProduct } from '../api/Products'
 import { itemGlobalIncrease } from '../api/PriceList'
 
 const productos = ref([])

@@ -5,6 +5,16 @@
         <img src="/logo.png" alt="Logo ACCECORT" class="w-15 h-15 object-contain" />ACCECORT
       </h2>
       <nav class="flex flex-col gap-3">
+        <RouterLink to="/estadisticas" v-slot="{ isActive }">
+          <div
+            :class="[
+              'flex items-center gap-2 rounded px-3 py-2 font-medium transition-colors duration-200',
+              isActive ? 'bg-blue-600' : 'hover:bg-blue-600'
+            ]"
+          >
+            <ChartColumnIncreasingIcon class="w-5 h-5" /> Estadisticas
+          </div>
+        </RouterLink>
         <RouterLink to="/crear-ticket" v-slot="{ isActive }">
           <div
             :class="[
@@ -57,6 +67,6 @@
 
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { BarChart, FilePlus, Users, Tag, Package } from 'lucide-vue-next'
+import { BarChart, FilePlus, Users, Tag, Package, ChartColumnIncreasing, ChartColumn, ChartColumnIncreasingIcon} from 'lucide-vue-next'
 
 </script>

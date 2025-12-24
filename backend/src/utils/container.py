@@ -6,6 +6,8 @@ from src.client.clientRepository import ClientRepository
 from src.client.clientService import ClientService
 from src.ticket.ticketRepository import TicketRepository, ItemTicketRepository
 from src.ticket.ticketService import TicketService, ItemTicketService
+from src.dashboard.dashboardRepository import DashboardRepository
+from src.dashboard.dashboardService import  DashboardService
 
 priceListRepository = PriceListRepository()
 itemPriceListRepository = ItemPriceListRepository()
@@ -13,6 +15,7 @@ productRepository = ProductRepository()
 clientRepository = ClientRepository()
 ticketRepository = TicketRepository()
 itemTicketRepository = ItemTicketRepository()
+dashboardRepository = DashboardRepository()
 
 itemTicketService = ItemTicketService(itemTicketRepository)
 itemPriceListService = ItemPriceListService(itemPriceListRepository)
@@ -20,3 +23,4 @@ productService = ProductService(productRepository)
 priceListService = PriceListService(priceListRepository, itemPriceListService, productService)
 clientService = ClientService(clientRepository, priceListService)
 ticketService = TicketService(ticketRepository, clientService, itemTicketService)
+dashboardService = DashboardService(dashboardRepository)
