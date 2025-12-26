@@ -143,12 +143,12 @@
         </div>
 
         <div class="flex gap-2">
-          <RouterLink
+          <!--RouterLink
             :to="`/clientes/${cliente.id}/ticket`"
             class="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-900"
           >
             Boletas
-          </RouterLink>
+          </RouterLink-->
           <!-- Botón editar -->
           <button
             @click="abrirEditarCliente(cliente)"

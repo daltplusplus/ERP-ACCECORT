@@ -15,9 +15,10 @@ const routes = [
   { path: '/listas/:id', component: PriceListView },
   { path: '/crear-ticket', component: CreateTicketView},
   { path: '/editar-ticket/:id', component: EditTicketView},
-  { path: '/clientes/:id/ticket', component: TicketsView},
+  { path: '/ventas', component: TicketsView},
   { path: '/estadisticas', component: StatsView},
-  { path: '/listas', component: PriceListsView}
+  { path: '/listas', component: PriceListsView},
+  { path: '/:pathMatch(.*)*', redirect: 'ventas'}
 ]
 
 export const router = createRouter({

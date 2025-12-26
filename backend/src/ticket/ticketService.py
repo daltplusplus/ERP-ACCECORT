@@ -67,6 +67,16 @@ class TicketService:
     def get_ticket_by_client_id(self, session, id):
         self.ticket_repo.set_session(session)
         return self.ticket_repo.get_by_client_id(id)
-
+    
+    def get_all_tickets(self, session):
+        self.ticket_repo.set_session(session)
+        return self.ticket_repo.get_all()
+    
+    def get_tickets(self,session, first_day, last_day, client_id):
+        self.ticket_repo.set_session(session)
+        if client_id:
+            return self.ticket_repo.get_by_month_and_client(first_day, last_day, client_id)
+        else:
+            return self.ticket_repo.get_by_month(first_day, last_day)        
 
         

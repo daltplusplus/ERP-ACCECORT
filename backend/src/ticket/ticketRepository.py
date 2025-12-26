@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import select, func, desc
 from src.ticket.ticket import Ticket, ItemTicket 
+from src.client.client import Client
 
 class TicketRepository:
     def set_session(self, session):
@@ -36,7 +38,28 @@ class TicketRepository:
         self.session.flush()
         self.session.refresh(updated)
         return updated
+    
+    def get_by_month_and_client(self, since, until, client_id):
+        return (
+            self.session.query(Ticket)
+            .options(
+                joinedload(Ticket.items)
+                    .joinedload(ItemTicket.itemPriceList)
+            )
+            .filter(
+                Ticket.client_id == client_id,
+                Ticket.date.between(since, until)
+            )
+            .order_by(desc(Ticket.date))
+            .all()
+        )
 
+
+    
+    def get_by_month(self, since, until):
+        return self.session.query(Ticket).options(
+            joinedload(Ticket.items).joinedload(ItemTicket.itemPriceList)
+        ).filter(Ticket.date.between(since, until)).order_by(desc(Ticket.date)).all()
     
 
 class ItemTicketRepository:

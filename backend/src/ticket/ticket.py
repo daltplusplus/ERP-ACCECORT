@@ -7,6 +7,7 @@ from src.product import product
 from src.priceList import priceList
 from enum import Enum
 from dataclasses import dataclass
+from typing import List, Optional
 
 class TicketState(Enum):
     ISSUED = "ISSUED"
@@ -29,7 +30,7 @@ class Ticket(Base):
     def __init__(self, client):
         self.client = client
 
-    def to_dict(self, include_items=True):
+    def to_dict(self, include_items=True, include_client= False):
         data = {
             "id": self.id,
             "client_id": self.client_id,
@@ -42,9 +43,10 @@ class Ticket(Base):
 
         if include_items:
             data["items"] = [item.to_dict() for item in self.items]
+        if include_client:
+            data["client_name"] = self.client.name
 
         return data
-
 
 @dataclass
 class TicketDTO:
@@ -52,6 +54,7 @@ class TicketDTO:
     total: float
     subtotal: float
     state: String
+
 
 class ItemTicket(Base):
     __tablename__ = 'items_ticket'

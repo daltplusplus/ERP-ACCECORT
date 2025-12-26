@@ -1,7 +1,47 @@
 <!-- src/views/TicketsView.vue -->
 <template>
   <div class="p-6 max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Tickets</h1>
+    <h1 class="text-3xl font-bold mb-6">Ventas</h1>
+
+    <!-- Filtros -->
+    <div class="flex flex-col md:flex-row gap-4 mb-6">
+      <RouterLink
+        to="/crear-ticket"
+        
+        class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-green-900"
+      >
+        Nueva boleta
+      </RouterLink>
+      <!-- Filtro por mes -->
+      <select
+        v-model="selectedMonth"
+        class="px-3 py-2 border rounded-lg"
+      >
+        <option
+          v-for="month in months"
+          :key="month.value"
+          :value="month.value"
+        >
+          {{ month.label }}
+        </option>
+      </select>
+
+      <!-- Filtro por cliente -->
+      <select
+        v-model="selectedClient"
+        class="px-3 py-2 border rounded-lg"
+      >
+        <option value="all">Todos los clientes</option>
+        <option
+          v-for="client in clients"
+          :key="client.id"
+          :value="client.id"
+        >
+          {{ client.name }}
+        </option>
+      </select>
+    </div>
+
 
     <!-- Lista de tickets -->
     <div class="grid gap-4">
@@ -11,12 +51,13 @@
         class="flex justify-between items-center p-4 border rounded-xl shadow-sm bg-white hover:shadow-md transition"
       >
         <div>
-          <h2 class="text-xl font-semibold">{{ ticket.date }}</h2>
+          <h2 class="text-x font-semibold">{{ ticket.date }}</h2>
+          <p class="text-x text-gray-500">{{ ticket.client_name }}</p>
           <p class="text-sm text-gray-500">ID: {{ ticket.id }}</p>
+          
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- Desplegable de estado con color dinámico -->
           <select
             v-model="ticket.state"
             @change="updateTicketState(ticket)"
@@ -51,36 +92,101 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
-import { getClientTickets, changeTicket } from '../api/Tickets'
+import { ref, onMounted, watch } from 'vue'
+import { RouterLink } from 'vue-router'
+import { getTickets, changeTicket } from '../api/Tickets'
+import { getClients } from '../api/Clientes'
 
 const tickets = ref([])
-const route = useRoute()
-const clientId = route.params.id
+const clients = ref([])
 
-// Lista con traducción visible
-const estadosTicket = ref([
+/* ======================
+   Meses disponibles
+====================== */
+
+const months = ref([])
+
+const buildMonths = (count = 12) => {
+  const result = []
+  const now = new Date()
+
+  for (let i = 0; i < count; i++) {
+    const date = new Date(now.getFullYear(), now.getMonth() - i, 1)
+
+    result.push({
+      value: date.toISOString().slice(0, 7), // YYYY-MM
+      label: date.toLocaleDateString('es-AR', {
+        month: 'long',
+        year: 'numeric'
+      }).replace(/^./, c => c.toUpperCase())
+    })
+  }
+
+  months.value = result
+}
+
+/* ======================
+   Filtros
+====================== */
+
+const selectedMonth = ref(null)
+const selectedClient = ref('all')
+
+/* ======================
+   Estados
+====================== */
+
+const estadosTicket = [
   { value: 'ISSUED', label: 'Emitido' },
   { value: 'PAID', label: 'Pagado' },
   { value: 'CANCELED', label: 'Cancelado' }
-])
+]
 
-onMounted(async () => {
+/* ======================
+   Carga de tickets
+====================== */
+
+const loadTickets = async () => {
+  if (!selectedMonth.value) return
+
   try {
-    tickets.value = await getClientTickets(clientId)
-    // limpiar el prefijo "TicketState." si el backend lo envía así
+    const clientId =
+      selectedClient.value === 'all'
+        ? null
+        : Number(selectedClient.value)
+
+    tickets.value = await getTickets(
+      selectedMonth.value,
+      clientId
+    )
+
     tickets.value.forEach(t => {
-      if (t.state?.startsWith("TicketState.")) {
-        t.state = t.state.replace("TicketState.", "")
+      if (t.state?.startsWith('TicketState.')) {
+        t.state = t.state.replace('TicketState.', '')
       }
     })
   } catch (err) {
     console.error('Error cargando tickets:', err)
   }
+}
+
+/* ======================
+   Init
+====================== */
+
+onMounted(async () => {
+  buildMonths()
+  selectedMonth.value = months.value[0].value
+
+  clients.value = await getClients()
+  await loadTickets()
 })
 
-// Cambiar el estado del ticket
+
+/* ======================
+   Watch filtros
+====================== */
+
 const updateTicketState = async (ticket) => {
   try {
     await changeTicket(ticket.id, { state: ticket.state })
@@ -90,4 +196,7 @@ const updateTicketState = async (ticket) => {
     alert('No se pudo actualizar el estado del ticket')
   }
 }
+
+watch([selectedMonth, selectedClient], loadTickets)
 </script>
+

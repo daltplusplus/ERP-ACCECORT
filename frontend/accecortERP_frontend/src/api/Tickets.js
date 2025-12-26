@@ -14,6 +14,26 @@ export async function createTicket(clientId) {
   }
 }
 
+export async function getTickets(month, client_id) {
+  try {
+    console.log(client_id)
+
+    let response
+
+    if (client_id) {
+      response = await api.get(`/tickets/${month}/${client_id}`)
+    } else {
+      response = await api.get(`/tickets/${month}`)
+    }
+
+    return response.data
+  } catch (error) {
+    console.error('Error al obtener los tickets:', error)
+    throw error
+  }
+}
+
+
 export async function getTicket(ticketId) {
   try {
     const response = await api.get(`/tickets/${ticketId}`)

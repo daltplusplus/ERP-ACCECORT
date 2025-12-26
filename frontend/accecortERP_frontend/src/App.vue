@@ -15,14 +15,15 @@
             <ChartColumnIncreasingIcon class="w-5 h-5" /> Estadisticas
           </div>
         </RouterLink>
-        <RouterLink to="/crear-ticket" v-slot="{ isActive }">
+        <RouterLink to="/ventas" v-slot="{ isActive }">
+
           <div
             :class="[
               'flex items-center gap-2 rounded px-3 py-2 font-medium transition-colors duration-200',
               isActive ? 'bg-blue-600' : 'hover:bg-blue-600'
             ]"
           >
-            <FilePlus class="w-5 h-5" /> Nueva boleta
+            <CircleDollarSignIcon class="w-5 h-5" /> Ventas
           </div>
         </RouterLink>
         <RouterLink to="/clientes" v-slot="{ isActive }">
@@ -67,6 +68,6 @@
 
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { BarChart, FilePlus, Users, Tag, Package, ChartColumnIncreasing, ChartColumn, ChartColumnIncreasingIcon} from 'lucide-vue-next'
+import { BarChart, FilePlus, Users, Tag, Package, ChartColumnIncreasing, ChartColumn, ChartColumnIncreasingIcon, CircleDollarSign, CircleDollarSignIcon} from 'lucide-vue-next'
 
 </script>

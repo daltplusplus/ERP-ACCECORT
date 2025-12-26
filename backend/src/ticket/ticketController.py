@@ -6,14 +6,38 @@ from src.ticket.ticket import Ticket, TicketDTO, ItemTicketDTO, ItemTicket
 from src.utils.unitOfWork import UnitOfWork
 from database import SessionLocal
 from src.ticket.ticketPDFExporter import TicketPDFExporter
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
+
 ticket_bp = Blueprint("tickets", __name__)
 
 @ticket_bp.route("/tickets", methods=["GET"])
 def get_all_tickets():
-    tickets = ticketService.get_all_tickets()
-    return jsonify([
-        t.to_dict(False)
-     for t in tickets])
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        tickets = ticketService.get_tickets(u.session)
+        return jsonify([i.to_dict() for i in tickets])
+
+@ticket_bp.route("/tickets/<string:date>", methods=["GET"])
+def get_tickets_by_month(date):
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        dt = datetime.strptime(date, "%Y-%m")
+        first_day = dt.replace(day=1)
+        last_day = first_day + relativedelta(months=1) - relativedelta(seconds=1)
+        tickets = ticketService.get_tickets(u.session, first_day, last_day, None)
+        return jsonify([i.to_dict(include_client = True) for i in tickets])
+
+@ticket_bp.route("/tickets/<string:date>/<int:client_id>", methods=["GET"])
+def get_tickets(date, client_id):
+    uow = UnitOfWork(SessionLocal)
+    with uow as u:
+        dt = datetime.strptime(date, "%Y-%m")
+        first_day = dt.replace(day=1)
+        last_day = first_day + relativedelta(months=1) - relativedelta(seconds=1)
+        tickets = ticketService.get_tickets(u.session, first_day, last_day, client_id)
+        return jsonify([i.to_dict(include_client = True) for i in tickets])
+        
 
 @ticket_bp.route("/tickets/<int:ticket_id>", methods=["GET"])
 def get_ticket(ticket_id):
@@ -23,7 +47,7 @@ def get_ticket(ticket_id):
         if ticket is None:
             return jsonify({"error": "Ticket not found"}), 404
         return jsonify(
-            ticket.to_dict(True)
+            ticket.to_dict(include_items =True)
         )
 
 @ticket_bp.route("/tickets", methods=["POST"])
@@ -39,7 +63,7 @@ def create_ticket():
             return jsonify({"error": "Client not found"}), 404
 
         return jsonify(
-            ticket.to_dict(False)
+            ticket.to_dict(False, False)
         ), 201
 
 @ticket_bp.route("/tickets/<int:ticket_id>", methods=["DELETE"])
