@@ -7,7 +7,12 @@ class ClientRepository:
         self.session = session
 
     def get_all(self):
-        return self.session.query(Client).all()
+        return (
+            self.session
+            .query(Client)
+            .order_by(Client.name.asc())
+            .all()
+        )
 
     def get_by_id(self, list_id: int):
         return self.session.query(Client).filter(Client.id == list_id).first()
