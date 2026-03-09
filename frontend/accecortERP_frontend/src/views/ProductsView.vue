@@ -82,7 +82,7 @@
       @click="modalIncreaseOpen = true"
       class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
     >
-      Aumentar todo
+      cambio porcentual de precio global
     </button>
 
     <!-- Modal aumento -->
@@ -99,7 +99,7 @@
             type="number"
             placeholder="Porcentaje de aumento (%)"
             class="border rounded px-3 py-2 w-full mb-4"
-            min="1"
+            step="any"
             required
           />
 
@@ -228,8 +228,8 @@ async function addProducto() {
 }
 
 function goToConfirmation() {
-  if (increase.value < 1) {
-    alert('El aumento debe ser al menos 1%.')
+  if (increase.value == 0) {
+    alert('El aumento debe ser diferente de 0%.')
     return
   }
   confirmStep.value = 2

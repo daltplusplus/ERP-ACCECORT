@@ -115,7 +115,7 @@ def globa_item_increase():
     with uow as u:
         data = request.get_json()
         percentage = data.get('percentage')
-        if percentage is None or percentage < 0:
+        if percentage is None or percentage == 0:
             return jsonify({'error': 'invalid percentage'}), 400
 
         itemPriceListService.global_increase_by_percentage(u.session, percentage)
